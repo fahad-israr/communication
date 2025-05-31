@@ -26,14 +26,17 @@ import {
   CardActions,
   Grid,
   Tooltip,
-  CircularProgress
+  CircularProgress,
+  AppBar,
+  Toolbar
 } from '@mui/material';
 import {
   Favorite as FavoriteIcon,
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
   Engineering as EngineeringIcon,
-  AccessTime as AccessTimeIcon
+  AccessTime as AccessTimeIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -221,10 +224,42 @@ function App() {
     fetchThoughts();
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    setAuth({ username: '', password: '' });
+    setShowLogin(true);
+    setThoughts([]);
+    setSnackbar({
+      open: true,
+      message: 'Logged out successfully',
+      severity: 'success'
+    });
+  };
+
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 4 }}>
-        <Container maxWidth="md">
+      <Box sx={{ 
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #fdf2f7 0%, #fce4ec 100%)',
+        pb: 4
+      }}>
+        <AppBar position="static" color="primary" elevation={0}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Catty's Portal
+            </Typography>
+            {!showLogin && (
+              <Tooltip title="Logout">
+                <IconButton color="inherit" onClick={handleLogout}>
+                  <LogoutIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Toolbar>
+        </AppBar>
+
+        <Container maxWidth="md" sx={{ mt: 4 }}>
           <Paper 
             elevation={0}
             sx={{ 
