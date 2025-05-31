@@ -11,6 +11,9 @@ provider:
     THOUGHTS_TABLE: ${self:service}-thoughts-${self:provider.stage}
     AUTH_USERNAME: ${ssm:/catty-portal/${self:provider.stage}/username}
     AUTH_PASSWORD: ${ssm:/catty-portal/${self:provider.stage}/password}
+    RECIPIENT_EMAIL: ${ssm:/catty-portal/${self:provider.stage}/recipient-email}
+    SENDER_EMAIL: ${ssm:/catty-portal/${self:provider.stage}/sender-email}
+    RESEND_API_KEY: ${ssm:/catty-portal/${self:provider.stage}/resend-api-key}
   iam:
     role:
       statements:

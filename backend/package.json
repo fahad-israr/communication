@@ -8,8 +8,9 @@
     "remove": "serverless remove"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.451.0",
-    "@aws-sdk/lib-dynamodb": "^3.451.0"
+    "@aws-sdk/client-dynamodb": "^3.x",
+    "@aws-sdk/lib-dynamodb": "^3.x",
+    "resend": "^2.0.0"
   },
   "devDependencies": {
     "serverless": "^3.38.0",

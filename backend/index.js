@@ -1,12 +1,16 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { Resend } = require('resend');
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const TABLE_NAME = process.env.THOUGHTS_TABLE;
 const AUTH_USERNAME = process.env.AUTH_USERNAME;
 const AUTH_PASSWORD = process.env.AUTH_PASSWORD;
+const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL;
+const SENDER_EMAIL = process.env.SENDER_EMAIL;
 
 // Simple CORS headers
 const headers = {
@@ -41,6 +45,21 @@ const handleGetThoughts = async () => {
     return result.Items.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 };
 
+const sendEmail = async (thought) => {
+    try {
+        await resend.emails.send({
+            from: SENDER_EMAIL,
+            to: RECIPIENT_EMAIL,
+            subject: `New Thought Submitted - ${thought.category}`,
+            text: `New thought submitted:\n\nCategory: ${thought.category}\nContent: ${thought.content}\nTimestamp: ${thought.timestamp}`
+        });
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.error('Error sending email:', error);
+        // Don't throw the error - we don't want to fail the thought submission if email fails
+    }
+};
+
 const handlePostThought = async (body) => {
     const timestamp = new Date().toISOString();
     const item = {
@@ -60,6 +79,10 @@ const handlePostThought = async (body) => {
     });
 
     await docClient.send(command);
+    
+    // Send email notification
+    await sendEmail(item);
+    
     return item;
 };
 
