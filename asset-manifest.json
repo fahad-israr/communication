@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/communication/static/js/main.7a4cf712.js",
+    "main.js": "/communication/static/js/main.9b097e45.js",
     "index.html": "/communication/index.html",
-    "main.7a4cf712.js.map": "/communication/static/js/main.7a4cf712.js.map"
+    "main.9b097e45.js.map": "/communication/static/js/main.9b097e45.js.map"
   },
   "entrypoints": [
-    "static/js/main.7a4cf712.js"
+    "static/js/main.9b097e45.js"
   ]
 }
