@@ -1,0 +1,51 @@
+service: catty-portal
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    THOUGHTS_TABLE: ${self:service}-thoughts-${self:provider.stage}
+    AUTH_USERNAME: ${ssm:/catty-portal/${self:provider.stage}/username}
+    AUTH_PASSWORD: ${ssm:/catty-portal/${self:provider.stage}/password}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:UpdateItem
+          Resource: !GetAtt ThoughtsTable.Arn
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+          Resource: 
+            - arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/catty-portal/${self:provider.stage}/*
+
+functions:
+  api:
+    handler: index.handler
+    url: true
+
+resources:
+  Resources:
+    ThoughtsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.THOUGHTS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST 
